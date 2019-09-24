@@ -23,6 +23,9 @@ const generateItemElement = function (item) {
         <button class='shopping-item-toggle js-item-toggle'>
           <span class='button-label'>check</span>
         </button>
+        <button class='shopping-item-edit js-item-edit'>
+          <span class='button-label'>edit</span>
+        </button>
         <button class='shopping-item-delete js-item-delete'>
           <span class='button-label'>delete</span>
         </button>
@@ -114,6 +117,31 @@ const deleteListItem = function (id) {
   store.items.splice(index, 1);
 };
 
+const editCheckedForListItem = function(id, event) {
+    let item = store.items.find(item => item.id === id);
+    itemName = item.name;
+    let elem = $(event).closest('.js-item-element');
+    elem.html(`<form class="js-edit-form">
+        <input class="js-edit" type='text' name='edit' placeholder='${itemName}'></input>
+        <button type="submit">Change name</button>
+    </form>`);
+    
+    $('.js-edit-form').submit((e) => {
+       e.preventDefault();
+       let newName = $('.js-edit').val();
+       let i = store.items.find(item => item.id === id);
+       i.name = newName;
+       render();
+    });
+};
+
+const handleEditItem = function() {
+    $('.js-shopping-list').on('click', '.js-item-edit', function(event) {
+        const id = getItemIdFromElement(event.currentTarget);
+        editCheckedForListItem(id, event.currentTarget);
+    });
+};
+
 const handleDeleteItemClicked = function () {
   // Like in `handleItemCheckClicked`, 
   // we use event delegation.
@@ -160,6 +188,7 @@ const handleShoppingList = function () {
   handleItemCheckClicked();
   handleDeleteItemClicked();
   handleToggleFilterClick();
+  handleEditItem();
 };
 
 // when the page loads, call `handleShoppingList`
